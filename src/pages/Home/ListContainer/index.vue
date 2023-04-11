@@ -3,10 +3,12 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
+        <div class="swiper-container" ref="mySwiper">
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
+            <!-- 遍历引入图片实现轮播图carousel -->
+            <div class="swiper-slide" v-for="(carousel, index) in bannerList" :key="carousel.id">
+              <!-- v-bind:src -->
+              <img :src="carousel.imgUrl" />
             </div>
 
           </div>
@@ -102,8 +104,52 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+// 引swiper包
+import Swiper from 'swiper'
 export default {
-  name: 'ListContainer'
+  name: 'ListContainer',
+  mounted() {
+    // 派发actions，通过Vuex发起对Ajax的请求，将数据存储到Vuex仓库中
+    this.$store.dispatch('getBannerList')
+  },
+  computed: {
+    ...mapState({
+      bannerList: state => state.home.bannerList
+    })
+  },
+  watch: {
+    // 监听bannerList数据变化：因为这条数据发生过变化———— 由空数组变为非空
+    bannerList: {
+      // 如果执行handler说明组件实例身上的这个属性的数据已经有了，但不能保证v-for已经执行结束这个结构已经有了，所以swiper还是没有作用
+      // nextTick：在下次 DOM更新 循环结束以后 才会执行延迟问题，在修改数据之后立即执行这个方法，获取更新后的DOM（详细查看Vue官方文档）
+      handler(newValue, oldValue) {
+        this.$nextTick(() => {
+          var mySwiper = new Swiper(
+            this.$refs.mySwiper,
+            {
+              loop: true, // 循环模式选项
+
+              // 如果需要分页器
+              pagination: {
+                el: '.swiper-pagination',
+                // 点击小球的时候也切换图片
+                clickable: true
+              },
+
+              // 如果需要前进后退按钮
+              navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+              },
+
+            })
+        }
+
+        )
+      }
+    }
+  }
 }
 </script>
 
@@ -254,4 +300,5 @@ export default {
 
 .list-container .sortList .right .ads img:hover {
   opacity: 1;
-}</style>
+}
+</style>

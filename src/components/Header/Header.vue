@@ -2,7 +2,7 @@
  * @Author: LuLi 3436842252@qq.com
  * @Date: 2023-03-27 19:59:06
  * @LastEditors: LuLi 3436842252@qq.com
- * @LastEditTime: 2023-03-30 17:26:09
+ * @LastEditTime: 2023-04-08 22:51:23
  * @FilePath: \project-SPH\app\src\components\Header.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -68,16 +68,25 @@ export default {
             // ${} 的作用是可以方便地将变量、表达式和函数调用的值插入到(模板)字符串中，提高了字符串的可读性和可维护性
             // this.$router.push(`/search/${this.keyword}?k=${this.keyword.toUpperCase()}`)
             // 方法三：对象形式
-            this.$router.push({
-                name: 'search',// 对象形式必须使用路由名字name，不得使用path
-                params: { // params 参数设置
-                    keyword: this.keyword // 占位符后的key ： value(此处为input框输入的内容)
-                },
-                query: { //query参数设置
-                    k: this.keyword.toUpperCase()
+            // 如果有query参数也一起传递
+            if (this.$route.query) {
+                let location = {
+                    name: 'search',
+                    params: {
+                        keyword: this.keyword || undefined
+                    }
                 }
-
-            })
+                location.query = this.$route.query
+                this.$router.push(location)
+            } else {
+                let location = {
+                    name: 'search',
+                    params: {
+                        keyword: this.keyword || undefined
+                    }
+                }
+                this.$router.push(location)
+            }
         }
     }
 }
