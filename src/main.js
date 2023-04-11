@@ -14,6 +14,10 @@ import TypeNav from '@/components/TypeNav/index.vue'
 import router from '@/router/router.js';
 // 引入Vuex管理库
 import store from './store/index';
+// 引入mockServe.js模拟数据
+import mockServe from './mock/mockServe';
+// 引入swiper样式
+import 'swiper/css/swiper.css';
 
 // 注册全局组件 TypeNav
 Vue.component('TypeNav', TypeNav)

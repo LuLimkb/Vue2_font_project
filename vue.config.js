@@ -2,7 +2,7 @@
  * @Author: LuLi 3436842252@qq.com
  * @Date: 2023-03-27 16:38:44
  * @LastEditors: LuLi 3436842252@qq.com
- * @LastEditTime: 2023-04-01 17:15:36
+ * @LastEditTime: 2023-04-08 22:18:44
  * @FilePath: \app\vue.config.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -25,6 +25,12 @@ module.exports = defineConfig({
         } */
       }
     },
-  }
-
+  },
+  configureWebpack: {
+    // provide the app's title in webpack's name field, so that
+    // it can be accessed in index.html to inject the correct title.
+    resolve: {
+      fallback: { path: require.resolve("path-browserify") },
+    },
+  },
 })

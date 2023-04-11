@@ -2,7 +2,7 @@
  * @Author: LuLi 3436842252@qq.com
  * @Date: 2023-03-29 16:55:20
  * @LastEditors: LuLi 3436842252@qq.com
- * @LastEditTime: 2023-03-31 17:40:51
+ * @LastEditTime: 2023-04-11 17:41:36
  * @FilePath: \app\src\pages\Home\Home.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -15,8 +15,8 @@
         <Recommend></Recommend>
         <Rank></Rank>
         <Like></Like>
-        <Floor></Floor>
-        <Floor></Floor>
+        <!-- 自定义标签中可以使用 v-for -->
+        <Floor v-for="(floor, index) in floorList" :key="floor.id" :list="floor"></Floor>
         <Brand></Brand>
     </div>
 </template>
@@ -29,6 +29,7 @@ import Rank from './Rank/index.vue'
 import Like from './Like/index.vue'
 import Floor from './Floor/index.vue'
 import Brand from './Brand/index.vue'
+import { mapState } from 'vuex'
 
 export default {
     name: 'Home',
@@ -39,6 +40,15 @@ export default {
         Like,
         Floor,
         Brand
+    },
+    mounted() {
+        // 派发actions,获取floor组件的数据
+        this.$store.dispatch('getFloorList');
+    },
+    computed: {
+        ...mapState({
+            floorList: state => state.home.floorList
+        })
     }
 }
 </script>

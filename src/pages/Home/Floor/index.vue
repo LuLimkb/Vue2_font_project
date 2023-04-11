@@ -2,7 +2,7 @@
     <div class="floor">
         <div class="py-container">
             <div class="title clearfix">
-                <h3 class="fl">家用电器</h3>
+                <h3 class="fl">{{list.name}}</h3>
                 <div class="fr">
                     <ul class="nav-tabs clearfix">
                         <li class="active">
@@ -88,7 +88,9 @@
 
 <script>
 export default {
-    name: 'Floor'
+    name: 'Floor',
+    props:['list']
+
 }
 </script>
 
