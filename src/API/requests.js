@@ -4,6 +4,8 @@ import axios from "axios";
 import nprogress from 'nprogress';
 // 引入进度条的样式
 import '../../node_modules/nprogress/nprogress.css'
+// 引入store
+import store from '@/store/index';
 
 // 利用axios对象中的create方法，去创建一个axios实例
 // requests 就是 axios，只是进行了配置
@@ -18,6 +20,16 @@ const requests = axios.create({
 // 请求拦截器的配置：在发送请求前，请求拦截器可以检验到，可以在请求发出去之前做执行一些配置逻辑
 requests.interceptors.request.use(config => {
     // config: 配置对象，对象里面的 headers 属性很重要
+    // 在请求头添加临时身份：前提与后台商量好以后
+    if (store.state.detail.uuid_token) {
+        // 请求头添加一个字段userTempId
+        config.headers.userTempId = store.state.detail.uuid_token
+    }
+    // 如果有token，在请求头中加入token发送给服务器获取对应token的用户信息
+    if (store.state.user.token) {
+        // config.headers.token 这里的token是请求头的一个属性，不能乱写，否则服务器无法识别token
+        config.headers.token = store.state.user.token;
+    }
     // 进度条开始：
     nprogress.start();
     return config;

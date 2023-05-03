@@ -2,7 +2,7 @@
  * @Author: LuLi 3436842252@qq.com
  * @Date: 2023-03-29 16:55:20
  * @LastEditors: LuLi 3436842252@qq.com
- * @LastEditTime: 2023-04-11 17:41:36
+ * @LastEditTime: 2023-04-25 11:00:18
  * @FilePath: \app\src\pages\Home\Home.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -16,7 +16,7 @@
         <Rank></Rank>
         <Like></Like>
         <!-- 自定义标签中可以使用 v-for -->
-        <Floor v-for="(floor, index) in floorList" :key="floor.id" :list="floor"></Floor>
+        <Floor v-for="floor in floorList" :key="floor.id" :list="floor"></Floor>
         <Brand></Brand>
     </div>
 </template>
@@ -44,6 +44,7 @@ export default {
     mounted() {
         // 派发actions,获取floor组件的数据
         this.$store.dispatch('getFloorList');
+        
     },
     computed: {
         ...mapState({

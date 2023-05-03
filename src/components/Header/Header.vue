@@ -2,7 +2,7 @@
  * @Author: LuLi 3436842252@qq.com
  * @Date: 2023-03-27 19:59:06
  * @LastEditors: LuLi 3436842252@qq.com
- * @LastEditTime: 2023-04-08 22:51:23
+ * @LastEditTime: 2023-04-25 11:13:52
  * @FilePath: \project-SPH\app\src\components\Header.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,16 +13,22 @@
             <div class="container">
                 <div class="loginList">
                     <p>尚品汇欢迎您！</p>
-                    <p>
+                    <!-- 未登录时 -->
+                    <p v-if="!userName">
                         <span>请</span>
                         <!-- 声明式路由导航 -->
                         <router-link to="/login">登录</router-link>
                         <router-link class="register" to="/register">免费注册</router-link>
                     </p>
+                    <!-- 登录后 -->
+                    <p v-else>
+                        <a>{{ userName }}</a>
+                        <a class="register" @click="logout">退出登录</a>
+                    </p>
                 </div>
                 <div class="typeList">
-                    <a href="###">我的订单</a>
-                    <a href="###">我的购物车</a>
+                    <router-link to="/center/myOrder">我的订单</router-link>
+                    <router-link to="/shopCart">我的购物车</router-link>
                     <a href="###">我的尚品汇</a>
                     <a href="###">尚品汇会员</a>
                     <a href="###">企业采购</a>
@@ -58,6 +64,12 @@ export default {
             keyword: ''
         }
     },
+    mounted() {
+        // 通过全局事件总线清除关键字
+        this.$bus.$on('clear', () => {
+            this.keyword = '';
+        })
+    },
     methods: {
         // 搜索按钮的回调函数，点击后向搜索路由Search跳转
         goSearch() {
@@ -74,19 +86,26 @@ export default {
                     name: 'search',
                     params: {
                         keyword: this.keyword || undefined
-                    }
-                }
-                location.query = this.$route.query
-                this.$router.push(location)
-            } else {
-                let location = {
-                    name: 'search',
-                    params: {
-                        keyword: this.keyword || undefined
-                    }
+                    },
+                    query: this.$route.query
                 }
                 this.$router.push(location)
             }
+        },
+        //  退出登录
+        async logout() {
+            try {
+                await this.$store.dispatch('userLogout');
+                this.$router.push('/home');
+            } catch (error) {
+                alert(error.message)
+            }
+        }
+    },
+    computed: {
+        // 用户名：
+        userName() {
+            return this.$store.state.user.userInfo.name
         }
     }
 }

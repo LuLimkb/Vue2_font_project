@@ -2,14 +2,53 @@
  * @Author: LuLi 3436842252@qq.com
  * @Date: 2023-03-31 16:20:29
  * @LastEditors: LuLi 3436842252@qq.com
- * @LastEditTime: 2023-04-08 21:43:44
+ * @LastEditTime: 2023-04-14 12:36:11
  * @FilePath: \app\src\pages\Home\TypeNav\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
-    <div class="type-nav" @mouseleave="leaveIdex" @mouseenter="enterShow">
+    <div class="type-nav">
         <div class="container">
-            <h2 class="all">全部商品分类</h2>
+            <!-- 事件委派 -->
+            <div @mouseleave="leaveIdex" @click="goSearch">
+                <h2 class="all" @mouseenter="enterShow">全部商品分类</h2>
+                <!-- 三级联动 -->
+                <!-- Vue.js中使用过度动画 -->
+                <transition name="sort">
+                    <div class="sort" v-show="show">
+                        <!-- 利用编程式导航和事件委托实现路由的跳转和参数传递 -->
+                        <div class="all-sort-list2">
+                            <!-- 一级分类 -->
+                            <div class="item bo" v-for="(c1, index) in categoryList" :key="c1.categoryId">
+                                <h3 @mouseenter="changeIndex(index)" :class="{ curretbg: currentIndex == index }">
+                                    <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{
+                                        c1.categoryName }}</a>
+                                </h3>
+                                <!-- 二级分类 -->
+                                <div class="item-list clearfix"
+                                    :style="{ display: currentIndex == index ? 'block' : 'none' }">
+                                    <div class="subitem" v-for="(c2, index) in c1.categoryChild" :key="c2.categoryId">
+                                        <dl class="fore">
+                                            <dt>
+                                                <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">
+                                                    {{
+                                                        c2.categoryName }}</a>
+                                            </dt>
+                                            <!-- 三级分类 -->
+                                            <dd>
+                                                <em v-for="(c3, index) in c2.categoryChild" :key="c3.categoryId">
+                                                    <a :data-categoryName="c3.categoryName"
+                                                        :data-category3Id="c3.categoryId">{{ c3.categoryName }}</a>
+                                                </em>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
             <nav class="nav">
                 <a href="###">服装城</a>
                 <a href="###">美妆馆</a>
@@ -20,42 +59,6 @@
                 <a href="###">有趣</a>
                 <a href="###">秒杀</a>
             </nav>
-            <!-- 三级联动 -->
-            <!-- Vue.js中使用过度动画 -->
-            <transition name="sort">
-                <div class="sort" v-show="show">
-                    <!-- 利用编程式导航和事件委托实现路由的跳转和参数传递 -->
-                    <div class="all-sort-list2" @click="goSearch">
-                        <!-- 一级分类 -->
-                        <div class="item bo" v-for="(c1, index) in categoryList" :key="c1.categoryId">
-                            <h3 @mouseenter="changeIndex(index)" :class="{ curretbg: currentIndex == index }">
-                                <a href="" :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{
-                                    c1.categoryName }}</a>
-                            </h3>
-                            <!-- 二级分类 -->
-                            <div class="item-list clearfix" :style="{ display: currentIndex == index ? 'block' : 'none' }">
-                                <div class="subitem" v-for="(c2, index) in c1.categoryChild" :key="c2.categoryId">
-                                    <dl class="fore">
-                                        <dt>
-                                            <a href="" :data-categoryName="c2.categoryName"
-                                                :data-category2Id="c2.categoryId">
-                                                {{
-                                                    c2.categoryName }}</a>
-                                        </dt>
-                                        <!-- 三级分类 -->
-                                        <dd>
-                                            <em v-for="(c3, index) in c2.categoryChild" :key="c3.categoryId">
-                                                <a href="" :data-categoryName="c3.categoryName"
-                                                    :data-category3Id="c3.categoryId">{{ c3.categoryName }}</a>
-                                            </em>
-                                        </dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </transition>
         </div>
     </div>
 </template>
@@ -105,7 +108,7 @@ export default {
         leaveIdex() {
             this.currentIndex = -1;
             // 此处设置判断只有进入到Search 组件中时才会执行
-            if (this.$route.path !== '/home') {
+            if (this.$route.path != '/home') {
                 this.show = false;
             }
         },
@@ -123,29 +126,33 @@ export default {
             // 如果标签带有自定义属性categoryname，则一定是a 标签
             if (categoryname) {
                 // 整理跳转的参数
-                let location = { name: 'search' }
-                let query = { categoryName: categoryname }
+                var location = {
+                    name: 'search',
+                    query: { categoryName: categoryname }
+                };
+
                 // 三级分类
                 if (category1id) {
-                    query.category1Id = category1id;
+                    location.query.category1Id = category1id;
                 }
                 else if (category2id) {
-                    query.category2Id = category2id;
+                    location.query.category2Id = category2id;
 
                 }
                 else {
-                    query.category3Id = category3id;
+                    location.query.category3Id = category3id;
 
                 }
                 // 判断：如果路由跳转时，带有params参数就一起传递
-                if (this.$route.params) {
-                    location.params = this.$route.params;
-                    // 整理完参数 , 动态给location配置对象添加query参数
-                    location.query = query
-                    // 路由跳转
-                    this.$router.push(location);
-                    
+                if (this.$route.params.keyword) {
+                    location = {
+                        name: 'search',
+                        query: { categoryName: categoryname },
+                        params: this.$route.params
+                    };
                 }
+                this.$router.push(location);
+
             }
         }
     }
